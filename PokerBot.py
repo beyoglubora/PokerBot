@@ -1,6 +1,9 @@
-import cv2
-import CardDetector
+from IgnitionCasinoPokerTracker import *
 
-img = cv2.imread("PokerTable.png")
-crop_img = img[700:1000, 600:1800]
-print(CardDetector.detect_cards(crop_img))
+pt = IgnitionCasinoPokerTracker("Game")
+
+
+while True:
+    pt.capture()
+    pt.track_new_game()
+    pt.update_game()
