@@ -1,7 +1,9 @@
 from PokerGame import *
 import CardDetector
-import BetDetector
+import ActionDetector
 import PlayerDetector
+import cv2
+import numpy as np
 
 
 class IgnitionCasinoPokerTracker:
@@ -14,6 +16,8 @@ class IgnitionCasinoPokerTracker:
         """
         self.path = path
         self.poker_game = PokerGame()
+        self.scale_image_width = .4
+        self.scale_image_height = .4
         self.track_new_game = True  # start tracking for a new game immediately
 
     def capture(self):
@@ -25,10 +29,12 @@ class IgnitionCasinoPokerTracker:
         """
         Publishes events that occur within the poker game to event queue
         """
+        image = cv2.imread(self.path, cv2.IMREAD_GRAYSCALE)
+        image = cv2.resize(image, (0, 0), fx=self.scale_image_width, fy=self.scale_image_height)
         if self.track_new_game:
-            self.track_new_game = self.should_detect_new_game()
+            self.track_new_game = self.should_detect_new_game(image)
 
-    def should_detect_new_game(self):
+    def should_detect_new_game(self, image):
         """
         Determines if tracking for new game is necessary. Will delegate detection work for determining if a new game has
         started to various detectors.
@@ -37,19 +43,19 @@ class IgnitionCasinoPokerTracker:
         requirements_satisfied = True
         if not self.poker_game.has_players():
             requirements_satisfied = False
-            PlayerDetector.detect_players()
+            PlayerDetector.detect_players(image, self.poker_game)
         if not self.poker_game.has_button():
             requirements_satisfied = False
-            PlayerDetector.detect_button()
+            PlayerDetector.detect_button(image, self.poker_game)
         if not self.poker_game.has_small_blind():
             requirements_satisfied = False
-            BetDetector.detect_small_blind(self.poker_game.get_button())
+            ActionDetector.detect_small_blind(self.poker_game.button)
         if not self.poker_game.has_big_blind():
             requirements_satisfied = False
-            BetDetector.detect_big_blind(self.poker_game.get_button())
+            ActionDetector.detect_big_blind(self.poker_game.button)
         if not self.poker_game.has_our_num():
             requirements_satisfied = False
-            self.detect_our_num()
+            PlayerDetector.detect_our_num(image, self.poker_game.button)
         if not self.poker_game.has_hand():
             requirements_satisfied = False
             CardDetector.detect_hand()

@@ -1,6 +1,7 @@
 class PokerGame:
     def __init__(self):
         self.players = None
+        self.player_boxes = {}
         self.sb = None
         self.bb = None
         self.button = None
@@ -11,6 +12,9 @@ class PokerGame:
 
     def set_players(self, players):
         self.players = players
+
+    def set_player_box(self, player, player_box):
+        self.player_boxes[player] = player_box
 
     def set_small_blind(self, sb):
         self.sb = sb
