@@ -12,6 +12,8 @@ def read_stack_chars(image):
     contours, _ = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     contours = sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[0])
 
+    # cv2.imshow("test", image)
+    # cv2.waitKey()
     chars = ""
     for ctr in contours:
         comparisons = list(map(lambda ref_ctr: cv2.matchShapes(ctr,ref_ctr,1,0), stack_reference_contours))
@@ -20,6 +22,8 @@ def read_stack_chars(image):
             chars += "$"
         elif i == 11:
             chars += "."
+        elif i == 12:
+            chars += ","
         else:
             chars += str(i)
     return chars
