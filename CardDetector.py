@@ -1,4 +1,3 @@
-import numpy as np
 import cv2
 import IgnitionCasinoConstants as igc
 
@@ -15,8 +14,8 @@ def detect_cards(img):
     :return: list of detected card images
     """
     img = cv2.resize(img, (_image_height, _image_width))
-    imggray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    ret, thresh = cv2.threshold(imggray, 127, 255, cv2.THRESH_BINARY)
+    img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    ret, thresh = cv2.threshold(img_gray, 127, 255, cv2.THRESH_BINARY)
     contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     card_contours = []
     for cnt in contours:
@@ -26,12 +25,14 @@ def detect_cards(img):
 
 
 def has_cards(player_box_image):
-    ret, image = cv2.threshold(player_box_image, igc.BACKFACING_CARD_THRESHOLD, 255, cv2.THRESH_BINARY)
-    contours, hierarchy = cv2.findContours(image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    """
+    :param player_box_image: A player bounding box
+    :return: True if player box contains back facing cards and false otherwise
+    """
+    _, image = cv2.threshold(player_box_image, igc.BACK_FACING_CARD_THRESHOLD, 255, cv2.THRESH_BINARY_INV)
+    contours, _ = cv2.findContours(image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     card_contours = []
     for cnt in contours:
-        if 5 > cv2.contourArea(cnt) > 0:
+        if igc.BACK_FACING_CARD_AREA_MAX_BOUND > cv2.contourArea(cnt) > igc.BACK_FACING_CARD_AREA_MIN_BOUND:
             card_contours.append(cnt)
-    player_box_image = cv2.drawContours(player_box_image, card_contours, -1, (0,255,0), 3)
-    cv2.imshow("image", player_box_image)
-    cv2.waitKey()
+    return True if card_contours else False

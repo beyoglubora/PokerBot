@@ -34,26 +34,41 @@ def characters_to_string(image, reference_image, threshold, character_fn):
 
 def read_stack_chars(image):
     reference_image = get_grayscale_image("Game/IgnitionCasinoStackReferenceCharacters.png")
+
     def character_fn(i):
-        if i == 10: return "$"
-        elif i == 11: return "."
-        elif i == 12: return ","
+        if i == 10:
+            return "$"
+        elif i == 11:
+            return "."
+        elif i == 12:
+            return ","
         return str(i)
+
     return characters_to_string(image, reference_image, igc.STACK_CHARS_THRESHOLD, character_fn)
 
 
 def read_card_chars(image):
     reference_image = get_grayscale_image("Game/IgnitionCasinoCardReferenceCharacters.png")
+
     def character_fn(i):
-        if i == 10: return "J"
-        elif i == 11: return "Q"
-        elif i == 12: return "K"
-        elif i == 13: return "A"
-        elif i == 14: return "c"
-        elif i == 15: return "d"
-        elif i == 16: return "h"
-        elif i == 17: return "s"
+        if i == 10:
+            return "J"
+        elif i == 11:
+            return "Q"
+        elif i == 12:
+            return "K"
+        elif i == 13:
+            return "A"
+        elif i == 14:
+            return "c"
+        elif i == 15:
+            return "d"
+        elif i == 16:
+            return "h"
+        elif i == 17:
+            return "s"
         return str(i)
+
     return characters_to_string(image, reference_image, igc.CARD_CHARS_THRESHOLD, character_fn)
 
 
